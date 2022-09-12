@@ -17,7 +17,7 @@ jt -t chesterish -T -f roboto -fs 12 -cellw 95%  # set jupyter notebook themes
 
 ## Neural Networks
 
--   [Neural Network Implementation](ml_neural_networks/README.md)
+-   [Neural Network Implementation](ml_neural_networks)
 
 -   [Deep Convolutional Neural Network for Image Classification](ml_deep_cnn_image_classification/README.md)
 
