@@ -21,7 +21,7 @@ jt -t chesterish -T -f roboto -fs 12 -cellw 95%  # set jupyter notebook themes
 
 -   [Deep Convolutional Neural Network for Image Classification](ml_deep_cnn_image_classification)
 
--   [Fully Connected Neural Network for handwritten digit recognition](ml_fcn_network_handwritten_digit_recognition)
+-   [Fully Connected Neural Network for handwritten digit recognition](ml_fcn_handwritten_digit_recognition)
 
 -   [Recurrent Neural Networks](ml_rnn)
 
