@@ -19,26 +19,26 @@ jt -t chesterish -T -f roboto -fs 12 -cellw 95%  # set jupyter notebook themes
 
 -   [Neural Network Implementation](ml_neural_networks)
 
--   [Deep Convolutional Neural Network for Image Classification](ml_deep_cnn_image_classification/README.md)
+-   [Deep Convolutional Neural Network for Image Classification](ml_deep_cnn_image_classification)
 
--   [Fully Connected Neural Network for handwritten digit recognition](ml_fcn_network_handwritten_digit_recognition/README.md)
+-   [Fully Connected Neural Network for handwritten digit recognition](ml_fcn_network_handwritten_digit_recognition)
 
--   [Recurrent Neural Networks](ml_rnn/README.md)
+-   [Recurrent Neural Networks](ml_rnn)
 
 ## Dimensionality Reduction
 
--   [PCA](ml_pca/README.md)
+-   [PCA](ml_pca)
 
 ## Clustering
 
--   [Kmeans and Hierarchical Clustering](ml_kmeans_and_hierarchical_clustering/README.md)
+-   [Kmeans and Hierarchical Clustering](ml_kmeans_and_hierarchical_clustering)
 
 ## Classification and Regression
 
--   [Decision Trees](ml_decision_trees/README.md)
+-   [Decision Trees](ml_decision_trees)
 
--   [K Nearest Neighbors](ml_knn/README.md)
+-   [K Nearest Neighbors](ml_knn)
 
--   [Linear and Logistic Regression](ml_linear_logistic_regression/README.md)
+-   [Linear and Logistic Regression](ml_linear_logistic_regression)
 
--   [Support Vector Machines](ml_svm/README.md)
+-   [Support Vector Machines](ml_svm)
