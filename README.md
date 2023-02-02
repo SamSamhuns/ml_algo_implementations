@@ -25,6 +25,10 @@ jt -t chesterish -T -f roboto -fs 12 -cellw 95%  # set jupyter notebook themes
 
 -   [Recurrent Neural Networks](ml_rnn)
 
+## Generative Neural Networks
+
+-   [Face GAN](ml_gan_human_face_snthesis)
+
 ## Dimensionality Reduction
 
 -   [PCA](ml_pca)
