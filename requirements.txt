@@ -1,7 +1,7 @@
 autopep8
 cvxopt
 glob2
-jupyterlab==4.0.5
+jupyterlab==4.1.2
 matplotlib
 pandas
 scikit-learn
