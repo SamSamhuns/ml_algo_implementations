@@ -15,6 +15,12 @@ jt -t chesterish -T -f roboto -fs 12 -cellw 95%  # set jupyter notebook themes
 # enable nb extensions from the directory list menu after staring jupyter server
 ```
 
+## Running Jupyter Labs
+
+```shell
+jupyter lab
+```
+
 ## Neural Networks
 
 -   [Autoencoder for anomaly detection Implementation](ml_autoencoder)
