@@ -1,4 +1,4 @@
-# Autoencoder
+# AutoEncoder
 
 ## Anomaly Detection with autoencoders
 

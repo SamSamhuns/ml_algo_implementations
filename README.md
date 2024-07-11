@@ -23,7 +23,7 @@ jupyter lab
 
 ## Neural Networks
 
--   [Autoencoder for anomaly detection Implementation](ml_autoencoder)
+-   [AutoEncoder for anomaly detection Implementation](ml_autoencoder)
 
 -   [Neural Network Implementation](ml_neural_networks)
 
@@ -43,7 +43,7 @@ jupyter lab
 
 ## Clustering
 
--   [Kmeans and Hierarchical Clustering](ml_kmeans_and_hierarchical_clustering)
+-   [KMeans and Hierarchical Clustering](ml_kmeans_and_hierarchical_clustering)
 
 ## Classification and Regression
 
