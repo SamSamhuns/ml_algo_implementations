@@ -1,11 +1,13 @@
 autopep8
 cvxopt
 glob2
-jupyterlab==4.2.5
+jupyter
+jupyterlab
 matplotlib
 pandas
 scikit-learn
 seaborn
+tensorboard
 torch
 torchvision
 tqdm
