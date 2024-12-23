@@ -133,3 +133,6 @@ dmypy.json
 
 # temp data dirs
 .data
+
+# saved models
+saved_models
