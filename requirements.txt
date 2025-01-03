@@ -1,9 +1,12 @@
 autopep8
 cvxopt
+emoji
 glob2
 jupyter
 jupyterlab
+kagglehub
 matplotlib
+nltk
 pandas
 scikit-learn
 seaborn
