@@ -16,8 +16,11 @@ N_LETTERS = len(ALL_LETTERS)
 
 def unicode_to_ascii(string):
     """convert unicode string to plain ascii, removing any accents"""
-    return ''.join(c for c in unicodedata.normalize('NFD', string)
-                   if unicodedata.category(c) != 'Mn' and c in ALL_LETTERS)
+    return "".join(
+        c
+        for c in unicodedata.normalize("NFD", string)
+        if unicodedata.category(c) != "Mn" and c in ALL_LETTERS
+    )
 
 
 def file_list(path):
@@ -25,9 +28,8 @@ def file_list(path):
 
 
 def read_lines_in_file(filename):
-    """get list of lines from file
-    """
-    lines = io_open(filename, encoding='utf-8').read().strip().split('\n')
+    """get list of lines from file"""
+    lines = io_open(filename, encoding="utf-8").read().strip().split("\n")
     return [unicode_to_ascii(line) for line in lines]
 
 
@@ -59,8 +61,7 @@ def get_category_names_and_lines(data_txt_path="../data/names/*.txt"):
 
     # populate the categories
     for class_file_path in file_list(data_txt_path):
-        category_name = os.path.basename(class_file_path).split('.')[
-            0]  # language name
+        category_name = os.path.basename(class_file_path).split(".")[0]  # language name
         category_lines[category_name] = read_lines_in_file(class_file_path)
         category_names.append(category_name)
 

@@ -5,8 +5,7 @@ from enum import Enum
 import matplotlib.pyplot as plt
 from collections import namedtuple
 from sklearn.datasets import load_boston
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.model_selection import train_test_split, KFold
+from sklearn.model_selection import KFold
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 
@@ -17,12 +16,11 @@ class TrainType(Enum):
 
 
 Model_Parameter = namedtuple(
-    'Model_Parameter', ('lambda_ridge, training_method, alpha, epochs')
+    "Model_Parameter", ("lambda_ridge, training_method, alpha, epochs")
 )
 
 
 class Preprocessing:
-
     def __init__(self):
         self.mean = None
         self.std = None
@@ -75,27 +73,33 @@ class Preprocessing:
 
 
 class LinearRegr:
-
-    __slots__ = ['theta']
+    __slots__ = ["theta"]
 
     def __init__(self):
         self.theta = None
 
     def __repr__(self):
-        return ' '.join([str(parm) for parm in np.ndarray.flatten(self.theta)])
+        return " ".join([str(parm) for parm in np.ndarray.flatten(self.theta)])
 
-    def fit(self, X, y,
-            model_params=Model_Parameter(lambda_ridge=0,
-                                         training_method=TrainType.NORMAL_EQUATION,
-                                         alpha=0.5,
-                                         epochs=1000)):
+    def fit(
+        self,
+        X,
+        y,
+        model_params=Model_Parameter(
+            lambda_ridge=0,
+            training_method=TrainType.NORMAL_EQUATION,
+            alpha=0.5,
+            epochs=1000,
+        ),
+    ):
         """
         Fit/train the linear model
         It has been assumed that the bias has been added to X
         """
         if X.shape[0] != y.shape[0]:
             raise ValueError(
-                f"X shape {X.shape[0]} != y shape {y.shape[0]}. Dimensions not matching")
+                f"X shape {X.shape[0]} != y shape {y.shape[0]}. Dimensions not matching"
+            )
 
         if model_params.training_method == TrainType.NORMAL_EQUATION:
             self._normal_equation_method(X, y, model_params)
@@ -117,8 +121,7 @@ class LinearRegr:
         X_t = np.matrix.transpose(X)
 
         dot_Xt_X = np.dot(X_t, X)  # XtX
-        self.theta = np.dot(
-            np.dot(np.linalg.pinv(dot_Xt_X+E_start), X_t), y)
+        self.theta = np.dot(np.dot(np.linalg.pinv(dot_Xt_X + E_start), X_t), y)
 
     def _gradient_descent_method(self, X, y, model_params):
         """
@@ -131,19 +134,18 @@ class LinearRegr:
         m = y.shape[0]
 
         for epoch in range(epochs):
-            gradient_wout_regu = (1/m)*np.dot(
-                np.matrix.transpose(X), np.dot(X, self.theta)-y)
+            gradient_wout_regu = (1 / m) * np.dot(
+                np.matrix.transpose(X), np.dot(X, self.theta) - y
+            )
             # 0th parameter/bias is not regularized
-            self.theta[0] = self.theta[0] - alpha*gradient_wout_regu[0]
-            gradient_with_regu = gradient_wout_regu + \
-                ((lambda_ridge/m)*self.theta)
+            self.theta[0] = self.theta[0] - alpha * gradient_wout_regu[0]
+            gradient_with_regu = gradient_wout_regu + ((lambda_ridge / m) * self.theta)
             # All other parameters regularized
-            self.theta[1:] = self.theta[1:] - alpha*gradient_with_regu[1:]
+            self.theta[1:] = self.theta[1:] - alpha * gradient_with_regu[1:]
 
             if epoch % 1 == 0:
                 current_loss = self.loss(X, y, lambda_ridge)
-                logging.info(
-                    f"Current loss at epoch {epoch} is {current_loss}")
+                logging.info(f"Current loss at epoch {epoch} is {current_loss}")
                 loss_overtime.append(current_loss)
 
         self.plot_loss_curve(loss_overtime, epochs)
@@ -161,20 +163,23 @@ class LinearRegr:
 
     @staticmethod
     def mse_loss(X, y, theta, lambda_ridge=0):
-        """ Calculates the MSE loss for linear regression """
+        """Calculates the MSE loss for linear regression"""
         if X.shape[0] != y.shape[0]:
             raise ValueError(
-                f"X shape {X.shape[0]} != y shape {y.shape[0]}. Dimensions not matching")
+                f"X shape {X.shape[0]} != y shape {y.shape[0]}. Dimensions not matching"
+            )
         elif X.shape[1] != theta.shape[0]:
             raise ValueError(
-                f"X shape {X.shape[1]} != theta shape {theta.shape[0]}. Dimensions not matching")
+                f"X shape {X.shape[1]} != theta shape {theta.shape[0]}. Dimensions not matching"
+            )
 
-        X_theta_minus_y = np.dot(X, theta)-y
+        X_theta_minus_y = np.dot(X, theta) - y
         X_theta_minus_y_t = np.matrix.transpose(X_theta_minus_y)
 
-        return (1/(2*X.shape[0])) * (
-            (np.dot(X_theta_minus_y_t, X_theta_minus_y)) +
-            (lambda_ridge*np.dot(np.matrix.transpose(theta[1:]), theta[1:])))
+        return (1 / (2 * X.shape[0])) * (
+            (np.dot(X_theta_minus_y_t, X_theta_minus_y))
+            + (lambda_ridge * np.dot(np.matrix.transpose(theta[1:]), theta[1:]))
+        )
 
     @staticmethod
     def predict_X(X, theta):
@@ -197,8 +202,8 @@ class LinearRegr:
 
         y_mean = np.mean(y)
         y_pred = LinearRegr.predict_X(X, theta)
-        ss_total = sum((y-y_mean)**2)  # total sum of squares
-        ss_res = sum((y-y_pred)**2)    # sum of squared residuals
+        ss_total = sum((y - y_mean) ** 2)  # total sum of squares
+        ss_res = sum((y - y_pred) ** 2)  # sum of squared residuals
 
         return 1 - (ss_res / ss_total)
 
@@ -225,36 +230,41 @@ class LinearRegr:
 
 
 class KFoldCrossValidator:
-
-    __slots__ = ['train_loss', 'test_loss', 'theta']
+    __slots__ = ["train_loss", "test_loss", "theta"]
 
     def __init__(self):
         self.train_loss = []
         self.test_loss = []
         self.theta = None
 
-    def cross_validate(self,
-                       model,
-                       model_params,
-                       X, y, k=10,
-                       custom_kfold=False,
-                       seed=np.random.randint(10000)):
+    def cross_validate(
+        self,
+        model,
+        model_params,
+        X,
+        y,
+        k=10,
+        custom_kfold=False,
+        seed=np.random.randint(10000),
+    ):
         """
         Cross validation function, the theta parameter chosen is from the split with the least test error
         """
 
         m = X.shape[0]
         lambda_ridge, training_method, alpha, epochs = model_params
-        min_test_error = float('inf')  # tracks the minimum error with k-folds
+        min_test_error = float("inf")  # tracks the minimum error with k-folds
         best_fit_theta = None  # saves the best theta value with the min_test_error
 
         if custom_kfold:
             logging.info(
-                f"Running Custom KFoldCrossValidator with {k} folds and lambda={lambda_ridge}")
+                f"Running Custom KFoldCrossValidator with {k} folds and lambda={lambda_ridge}"
+            )
             np.random.seed(seed)  # seed random shuffler
             if m < k:
                 raise ValueError(
-                    f"No of k splits {k} cannot be greater than no. of samples {m}")
+                    f"No of k splits {k} cannot be greater than no. of samples {m}"
+                )
 
             # Randomly shuffle X and y inplace while matching corresponding feat and target
             for i in range(m):
@@ -264,15 +274,19 @@ class KFoldCrossValidator:
                 y[[i, swap_idx]] = y[[swap_idx, i]]
 
             # test start and end idx
-            fold_step = m//k
+            fold_step = m // k
             start = 0
             end = fold_step
             for i in range(k):
                 end = min(end, m)  # prevent array idx out of bounds
-                X_train, X_test = np.concatenate(
-                    [X[0:start], X[end:m]], axis=0), X[start:end]
-                y_train, y_test = np.concatenate(
-                    [y[0:start], y[end:m]], axis=0), y[start:end]
+                X_train, X_test = (
+                    np.concatenate([X[0:start], X[end:m]], axis=0),
+                    X[start:end],
+                )
+                y_train, y_test = (
+                    np.concatenate([y[0:start], y[end:m]], axis=0),
+                    y[start:end],
+                )
                 start += fold_step
                 end += fold_step
 
@@ -287,7 +301,8 @@ class KFoldCrossValidator:
                     best_fit_theta = model.theta
         else:
             logging.info(
-                f"Running Sklearn KFoldCrossValidator with {k} folds and lambda {lambda_ridge}")
+                f"Running Sklearn KFoldCrossValidator with {k} folds and lambda {lambda_ridge}"
+            )
             kf = KFold(n_splits=k, random_state=seed, shuffle=True)
             for train_index, test_index in kf.split(X):
                 X_train, X_test = X[train_index], X[test_index]
@@ -306,17 +321,21 @@ class KFoldCrossValidator:
 
 
 if __name__ == "__main__":
-    X,y = load_boston(return_X_y=True)
+    X, y = load_boston(return_X_y=True)
     bh_model = LinearRegr()
     kfold_linear_regr = KFoldCrossValidator()
     X_feat = Preprocessing.insert_bias_term(X)
 
-    model_params = Model_Parameter(lambda_ridge=0, training_method=TrainType.NORMAL_EQUATION, alpha=0, epochs=0)
-    kfold_linear_regr.cross_validate(bh_model, model_params, X_feat, y, k=10, custom_kfold=False)
+    model_params = Model_Parameter(
+        lambda_ridge=0, training_method=TrainType.NORMAL_EQUATION, alpha=0, epochs=0
+    )
+    kfold_linear_regr.cross_validate(
+        bh_model, model_params, X_feat, y, k=10, custom_kfold=False
+    )
 
     lregr_train_loss = kfold_linear_regr.train_loss
     lregr_test_loss = kfold_linear_regr.test_loss
-    print(f'Average train loss is: {sum(lregr_train_loss)/len(lregr_train_loss)}')
-    print(f'Average test loss is: {sum(lregr_test_loss)/len(lregr_test_loss)}')
+    print(f"Average train loss is: {sum(lregr_train_loss) / len(lregr_train_loss)}")
+    print(f"Average test loss is: {sum(lregr_test_loss) / len(lregr_test_loss)}")
 
     print(f"R squared for the entire dataset is {bh_model.score(X_feat, y)}")

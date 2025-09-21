@@ -1,25 +1,18 @@
 import numpy as np
 import logging
 import sys
-from enum import Enum
 import matplotlib.pyplot as plt
 from collections import namedtuple
-from tqdm import tqdm
-from sklearn.metrics import plot_confusion_matrix
 from sklearn.datasets import load_breast_cancer
-from sklearn.preprocessing import PolynomialFeatures
 from sklearn.model_selection import train_test_split, KFold
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
-plt.style.use('seaborn-darkgrid')
+plt.style.use("seaborn-darkgrid")
 
-model_parameter = namedtuple(
-    'model_parameter', ('lambda_ridge, alpha, epochs')
-)
+model_parameter = namedtuple("model_parameter", ("lambda_ridge, alpha, epochs"))
 
 
 class Preprocessing:
-
     def __init__(self):
         self.mean = None
         self.std = None
@@ -72,27 +65,29 @@ class Preprocessing:
 
 
 class LogisticRegr:
-
-    slots = ['theta']
+    slots = ["theta"]
 
     def __init__(self):
         self.theta = None
 
     def __repr__(self):
-        return ' '.join([str(val) for val in np.ndarray.flatten(self.theta)])
+        return " ".join([str(val) for val in np.ndarray.flatten(self.theta)])
 
-    def fit(self, X, y,
-            logging_enabled=True,
-            model_params=model_parameter(lambda_ridge=0,
-                                         alpha=0.5,
-                                         epochs=5000)):
+    def fit(
+        self,
+        X,
+        y,
+        logging_enabled=True,
+        model_params=model_parameter(lambda_ridge=0, alpha=0.5, epochs=5000),
+    ):
         """
         WARNING: X must be normalized and have the bias term before training
         Batch Gradient Descent for logistic regression
         """
         if X.shape[0] != y.shape[0]:
             raise ValueError(
-                f"X shape {X.shape[0]} != y shape {y.shape[0]}. Dimensions not matching")
+                f"X shape {X.shape[0]} != y shape {y.shape[0]}. Dimensions not matching"
+            )
 
         loss_arr = []
         m = X.shape[0]
@@ -101,11 +96,11 @@ class LogisticRegr:
 
         for epoch in range(epochs):
             gradient_wout_regu = (1 / m) * np.dot(
-                np.matrix.transpose(X), LogisticRegr.sigmoid(np.dot(X, self.theta)) - y)
+                np.matrix.transpose(X), LogisticRegr.sigmoid(np.dot(X, self.theta)) - y
+            )
             # 0th parameter/bias is not regularized
             self.theta[0] = self.theta[0] - alpha * gradient_wout_regu[0]
-            gradient_with_regu = gradient_wout_regu + \
-                ((lambda_ridge / m) * self.theta)
+            gradient_with_regu = gradient_wout_regu + ((lambda_ridge / m) * self.theta)
             # All other parameters regularized
             self.theta[1:] = self.theta[1:] - alpha * gradient_with_regu[1:]
 
@@ -123,8 +118,8 @@ class LogisticRegr:
             plt.semilogx(range(epochs), loss_arr)
         else:
             plt.plot(loss_arr)
-        plt.ylabel('log loss')
-        plt.xlabel('Epoch (x100)')
+        plt.ylabel("log loss")
+        plt.xlabel("Epoch (x100)")
         plt.title("Loss Overtime")
         plt.grid(True)
         plt.show()
@@ -133,20 +128,22 @@ class LogisticRegr:
     def log_loss(X, y, theta, lambda_ridge: float = 0.0):
         if X.shape[0] != y.shape[0]:
             raise ValueError(
-                f"X shape {X.shape[0]} != y shape {y.shape[0]}. Dimensions not matching")
+                f"X shape {X.shape[0]} != y shape {y.shape[0]}. Dimensions not matching"
+            )
         elif X.shape[1] != theta.shape[0]:
             raise ValueError(
-                f"X shape {X.shape[1]} != theta shape {theta.shape[0]}. Dimensions not matching")
+                f"X shape {X.shape[1]} != theta shape {theta.shape[0]}. Dimensions not matching"
+            )
 
         m = X.shape[0]
         h = LogisticRegr.sigmoid(np.dot(X, theta))
         # loss J(theta) = -(1/m)*(yt*logh + (1-y)t*log(1-h)) + lambda/2m theta_t * theta
-        return ((-1 / m) * (
-                np.dot(np.matrix.transpose(y), np.log(h))
-                + np.dot(np.matrix.transpose(1-y), np.log(1-h)))
-                + ((lambda_ridge/(2*m))
-                 * np.dot(np.matrix.transpose(theta[1:]), theta[1:]))
-                )
+        return (-1 / m) * (
+            np.dot(np.matrix.transpose(y), np.log(h))
+            + np.dot(np.matrix.transpose(1 - y), np.log(1 - h))
+        ) + (
+            (lambda_ridge / (2 * m)) * np.dot(np.matrix.transpose(theta[1:]), theta[1:])
+        )
 
     @staticmethod
     def sigmoid(X):
@@ -167,7 +164,9 @@ class LogisticRegr:
         accuracy = (TP+TN) / (TP+FP+TN+FN)
         """
         y_pred = LogisticRegr.predict(X, self.theta, threshold)
-        return len([1 for y_true, y_hat in zip(y, y_pred) if y_true == y_hat]) / X.shape[0]
+        return (
+            len([1 for y_true, y_hat in zip(y, y_pred) if y_true == y_hat]) / X.shape[0]
+        )
 
     def precision(self, X, y, threshold: float = 0.5):
         """
@@ -176,7 +175,8 @@ class LogisticRegr:
         """
         y_pred = LogisticRegr.predict(X, self.theta, threshold)
         true_positives = len(
-            [1 for y_true, y_hat in zip(y, y_pred) if y_true == y_hat == 1])
+            [1 for y_true, y_hat in zip(y, y_pred) if y_true == y_hat == 1]
+        )
         total_positives_pred = sum(y_pred)
         return true_positives / total_positives_pred
 
@@ -188,9 +188,15 @@ class LogisticRegr:
         """
         y_pred = LogisticRegr.predict(X, self.theta, threshold)
         true_positives = len(
-            [1 for y_true, y_hat in zip(y, y_pred) if y_true == y_hat == 1])
-        true_pos_and_false_neg = len([1 for y_true, y_hat in zip(
-            y, y_pred) if y_true == y_hat == 1 or (y_true == 1 and y_hat == 0)])
+            [1 for y_true, y_hat in zip(y, y_pred) if y_true == y_hat == 1]
+        )
+        true_pos_and_false_neg = len(
+            [
+                1
+                for y_true, y_hat in zip(y, y_pred)
+                if y_true == y_hat == 1 or (y_true == 1 and y_hat == 0)
+            ]
+        )
         return true_positives / true_pos_and_false_neg
 
     def f1_score(self, X, y, threshold: float = 0.5):
@@ -206,27 +212,21 @@ class LogisticRegr:
     def plot_confusion_matrix(self, X, y, threshold: float = 0.5, custom: bool = True):
         y_pred = LogisticRegr.predict(X, self.theta, threshold)
 
-        tp = len([1 for y_true, y_hat in zip(
-            y, y_pred) if y_true == y_hat == 1])
-        tn = len([1 for y_true, y_hat in zip(
-            y, y_pred) if y_true == y_hat == 0])
-        fp = len([1 for y_true, y_hat in zip(y, y_pred)
-                  if y_true == 0 and y_hat == 1])
-        fn = len([1 for y_true, y_hat in zip(y, y_pred)
-                  if y_true == 1 and y_hat == 0])
+        tp = len([1 for y_true, y_hat in zip(y, y_pred) if y_true == y_hat == 1])
+        tn = len([1 for y_true, y_hat in zip(y, y_pred) if y_true == y_hat == 0])
+        fp = len([1 for y_true, y_hat in zip(y, y_pred) if y_true == 0 and y_hat == 1])
+        fn = len([1 for y_true, y_hat in zip(y, y_pred) if y_true == 1 and y_hat == 0])
         if custom:  # use custom confusion matrix generator
             print("\t\t\t      Actual values")
             print("\t\t\tPositive(1)   Negative(0)")
             print(f"Predicted| Positive(1)     TP {tp}\t  FP {fp}")
             print(f"  Values | Negative(0)     FN {fn}\t\t  TN {tn}")
-        else:      # use sklearn.metrics.confusion_matrix
+        else:  # use sklearn.metrics.confusion_matrix
             pass
 
 
 class KFoldCrossValidator:
-
-    __slots__ = ['train_loss', 'test_loss',
-                 'train_accuracy', 'test_accuracy', 'theta']
+    __slots__ = ["train_loss", "test_loss", "train_accuracy", "test_accuracy", "theta"]
 
     def __init__(self):
         self.train_loss = []
@@ -235,29 +235,36 @@ class KFoldCrossValidator:
         self.test_accuracy = []
         self.theta = None
 
-    def cross_validate(self, model, X, y, k=10,
-                       logging_enabled=True,
-                       model_params=model_parameter(
-                           lambda_ridge=0, alpha=0.5, epochs=5000),
-                       custom_kfold=False,
-                       seed=np.random.randint(10000)):
+    def cross_validate(
+        self,
+        model,
+        X,
+        y,
+        k=10,
+        logging_enabled=True,
+        model_params=model_parameter(lambda_ridge=0, alpha=0.5, epochs=5000),
+        custom_kfold=False,
+        seed=np.random.randint(10000),
+    ):
         """
         Cross validation function, the theta parameter chosen is from the split with the least test error
         """
 
         m = X.shape[0]
         lambda_ridge, alpha, epochs = model_params
-        min_test_error = float('inf')  # tracks the minimum error with k-folds
+        min_test_error = float("inf")  # tracks the minimum error with k-folds
         best_fit_theta = None  # saves the best theta value with the min_test_error
         preprocessor_object = Preprocessing()
 
         if custom_kfold:
             logging.info(
-                f"Running Custom KFoldCrossValidator with {k} folds and lambda={lambda_ridge}")
+                f"Running Custom KFoldCrossValidator with {k} folds and lambda={lambda_ridge}"
+            )
             np.random.seed(seed)  # seed random shuffler
             if m < k:
                 raise ValueError(
-                    f"No of k splits {k} cannot be greater than no. of samples {m}")
+                    f"No of k splits {k} cannot be greater than no. of samples {m}"
+                )
 
             # Randomly shuffle X and y inplace while matching corresponding feat and target
             for i in range(m):
@@ -273,10 +280,14 @@ class KFoldCrossValidator:
 
             for i in range(k):
                 end = min(end, m)  # prevent array idx out of bounds
-                X_train, X_test = np.concatenate(
-                    [X[0:start], X[end:m]], axis=0), X[start:end]
-                y_train, y_test = np.concatenate(
-                    [y[0:start], y[end:m]], axis=0), y[start:end]
+                X_train, X_test = (
+                    np.concatenate([X[0:start], X[end:m]], axis=0),
+                    X[start:end],
+                )
+                y_train, y_test = (
+                    np.concatenate([y[0:start], y[end:m]], axis=0),
+                    y[start:end],
+                )
                 start += fold_step
                 end += fold_step
 
@@ -298,7 +309,8 @@ class KFoldCrossValidator:
                     best_fit_theta = model.theta
         else:
             logging.info(
-                f"Running Sklearn KFoldCrossValidator with {k} folds and lambda {lambda_ridge}")
+                f"Running Sklearn KFoldCrossValidator with {k} folds and lambda {lambda_ridge}"
+            )
             kf = KFold(n_splits=k, random_state=seed, shuffle=True)
             for train_index, test_index in kf.split(X):
                 X_train, X_test = X[train_index], X[test_index]
@@ -326,7 +338,8 @@ class KFoldCrossValidator:
 if __name__ == "__main__":
     X, y = load_breast_cancer(return_X_y=True)
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.40, random_state=42)
+        X, y, test_size=0.40, random_state=42
+    )
 
     preprocessing_object = Preprocessing()
     X_train_std = preprocessing_object.standardize_save_state(X_train)
